@@ -3,11 +3,11 @@
 ;;;; © Michał "phoe" Herda 2017
 ;;;; skippy-renderer.lisp
 
-(defpackage #:skippy/renderer
+(defpackage #:skippy-renderer
   (:use #:cl #:skippy)
   (:export #:render))
 
-(in-package :skippy/renderer)
+(in-package :skippy-renderer)
 
 ;;; TODO implement "Restore to Previous"
 
@@ -17,7 +17,7 @@ The first value is a list of vectors containing resulting ARGB data in
 row-first order and each second element
 The second value is a list of integer values for the frame delays in
 milliseconds.
-The second value is a list of three values: image width, image height and a
+The third value is a list of three values: image width, image height and a
 generalized boolean signifying if the GIF should loop."
   (loop with color-table = (color-table data-stream)
         with loopingp = (loopingp data-stream)
