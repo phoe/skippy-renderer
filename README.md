@@ -2,8 +2,10 @@
 
 This is a GIF renderer for SKIPPY.
 
-The only exported function is `RENDER` which accepts a SKIPPY data stream and
-returns three values - a list of vectors containing ARGB data in row-major
+The only exported function is `RENDER` which accepts a SKIPPY data stream and a
+`BYTE-ORDER` keyword argument that states the endianness of bytes in the
+resulting vector (ARGB or BGRA).
+It returns three values - a list of vectors containing ARGB data in row-major
 order, a list of integer values for frame delays in milliseconds, and a list
 containing three values: image width, image height and a boolean signifying if
 the GIF should loop.
