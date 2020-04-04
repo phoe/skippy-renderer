@@ -32,6 +32,16 @@ order, a list of integer values for frame delays in milliseconds, and a list
 containing three values: image width, image height and a boolean signifying if
 the GIF should loop.
 
+```lisp
+CL-USER> (skippy:load-data-stream "~/Downloads/cat_picture.gif")
+#<SKIPPY::DATA-STREAM geometry 100x100, 5 images {100D53C843}>
+CL-USER> (skippy-renderer:render *)
+(#(0 0 0 0 0 ...)
+ ...)
+(3 3 3 3 3)
+(100 100 T)
+```
+
 ## License
 
 MIT, or whatever the original SKIPPY is licensed under.
