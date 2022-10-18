@@ -42,13 +42,14 @@ generalized boolean signifying if the GIF should loop."
                                 delays
                                 (list width height loopingp)))))
 
-(defun render-image-to-frame (frame frame-width image color-table &key byte-order)
+(defun render-image-to-frame (frame frame-width image color-table
+                              &key byte-order)
   (let ((disposal-method (disposal-method image)))
     (case disposal-method
       (:restore-background (loop for i below (array-dimension frame 0)
                                  do (setf (aref frame i) 0)))
       (:restore-previous (error "Not implemented yet." #| TODO |#))))
-  (loop with fn = (case byte-order
+  (loop with fn = (ecase byte-order
                     (:argb #'index-argb)
                     (:bgra #'index-bgra))
         with color-table = (or (color-table image) color-table)
@@ -61,10 +62,12 @@ generalized boolean signifying if the GIF should loop."
         for y from 0 below height
         do (loop for x from 0 below width
                  for index = (elt data (+ x (* y width)))
-                 for argb = (funcall fn  color-table index t-index)
+                 for value = (funcall fn color-table index t-index)
                  for offset = (* 4 (+ left x (* frame-width (+ top y))))
-                 unless (= (first argb) 0)
-                   do (setf (subseq frame offset) argb))))
+                 unless (ecase byte-order
+                          (:argb (= (first value) 0))
+                          (:bgra (= (fourth value) 0)))
+                   do (setf (subseq frame offset) value))))
 
 (defun index-argb (color-table index transparency-index)
   (if (eql index transparency-index)
@@ -73,11 +76,8 @@ generalized boolean signifying if the GIF should loop."
                  (color-rgb (color-table-entry color-table index))))))
 
 (defun index-bgra (color-table index transparency-index)
-  (labels ((color-bgra (color)
-             (list (ldb (byte 8  0) color)
-                   (ldb (byte 8  8) color)
-                   (ldb (byte 8 16) color)
-                   255)))
-    (if (eql index transparency-index)
-        (list 0 0 0 0)
-        (color-bgra (color-table-entry color-table index)))))
+  (if (eql index transparency-index)
+      (list 0 0 0 0)
+      (append (reverse (multiple-value-list
+                        (color-rgb (color-table-entry color-table index))))
+              '(255))))
